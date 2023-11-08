@@ -1,5 +1,6 @@
 package com.example.user_management;
 
+
 import java.util.List;
 import java.util.Optional;
 
@@ -7,6 +8,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,8 +24,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
     @GetMapping
-    public ResponseEntity<List<User>> allAllUsers() {
+    public ResponseEntity<List<User>> getAllUsers() {
         return new ResponseEntity<List<User>>(userService.getAllUsers(), HttpStatus.OK);
     }
 
@@ -56,10 +59,25 @@ public class UserController {
             if (updatedUser.getCountry() != null) {
                 existingUser.setCountry(updatedUser.getCountry());
             }
+            // if (updatedUser.getId() != null) {
+            //     existingUser.setId(updatedUser.getId());
+            // }
             // Add similar checks for other fields as needed
 
             User savedUser = userService.saveUser(existingUser);
             return new ResponseEntity<User>(savedUser, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable("id") ObjectId _id) {
+        Optional<User> existingUserOptional = userService.getUserById(_id);
+
+        if (existingUserOptional.isPresent()) {
+            userService.deleteUserById(_id);
+            return new ResponseEntity<String>("User with id " + _id + " deleted successfully", HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

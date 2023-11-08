@@ -17,9 +17,13 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
-
+    
     public Optional<User> getUserById(ObjectId _id) {
-        return userRepository.findUserById(_id);
+        return userRepository.findById(_id);
+    }
+
+    public void deleteUserById(ObjectId _id) {
+        userRepository.deleteById(_id);
     }
 
     @Autowired
